@@ -41,7 +41,7 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.window.core.layout.WindowSizeClass
-import me.him188.ani.app.Res
+import me.him188.ani.app.shared.Res
 import me.him188.ani.app.data.models.subject.SubjectInfo
 import me.him188.ani.app.domain.mediasource.rss.RssMediaSource
 import me.him188.ani.app.domain.mediasource.web.SelectorMediaSource
@@ -63,7 +63,7 @@ import me.him188.ani.app.ui.cache.details.MediaCacheDetailsScreen
 import me.him188.ani.app.ui.cache.details.MediaDetails
 import me.him188.ani.app.ui.cache.details.MediaDetailsLazyGrid
 import me.him188.ani.app.ui.cache.subject.SubjectCacheScreen
-import me.him188.ani.app.ui.cache.subject.SubjectCacheViewModelImpl
+import me.him188.ani.app.ui.cache.subject.rememberSubjectCacheViewModel
 import me.him188.ani.app.ui.exploration.schedule.ScheduleScreen
 import me.him188.ani.app.ui.exploration.schedule.ScheduleViewModel
 import me.him188.ani.app.ui.foundation.animation.NavigationMotionScheme
@@ -517,9 +517,13 @@ private fun AniAppContentImpl(
             }
             entry<NavRoutes.SubjectCaches> { route ->
                 // Don't use rememberViewModel to save memory
-                val vm = remember(route.subjectId) { SubjectCacheViewModelImpl(route.subjectId) }
+                val vm = rememberSubjectCacheViewModel(route.subjectId)
                 SubjectCacheScreen(
-                    vm, Modifier.fillMaxSize(), windowInsets,
+                    vm,
+                    onPlay = { aniNavigator.navigateEpisodeDetails(it.subjectId, it.episodeId) },
+                    onNavigateCacheDetail = { aniNavigator.navigateCacheDetails(it) },
+                    modifier = Modifier.fillMaxSize(),
+                    windowInsets = windowInsets,
                     navigationIcon = {
                         BackNavigationIconButton(
                             {
